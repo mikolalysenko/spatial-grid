@@ -1,5 +1,7 @@
 "use strict";
 
+var EPSILON = 1e-6;
+
 var numeric = require("numeric");
 var bits = require("bit-twiddle");
 
@@ -25,13 +27,18 @@ function index(x) {
   };
 }
 
+
+// (a0 * p0 + a1 * q0  - x0)^2 + (a0 * p1 + a1 * q1 - x1)^2
+
+// a0*a0 *p0 *p0 + 2*a0*a1*p0*q0 + a1*a1*q0*q0-a0 * p0*x0 - a1*q0*x0
+
 //Computes distance from x to cell c
 function cellDistance(c, positions, x) {
   var D = numeric.rep([c.length, c.length], 0.0);
   var dvec = numeric.rep([c.length], 0.0);
   for(var i=0; i<c.length; ++i) {
     var pi = positions[c[i]];
-    dvec[i] = -numeric.dot(pi, x);
+    dvec[i] = 2.0 * numeric.dot(pi, x);
     for(var j=0; j<c.length; ++j) {
       var pj = positions[c[j]];
       D[i][j] = D[j][i] = numeric.dot(pi, pj);
@@ -66,27 +73,35 @@ Grid.prototype.closestCell = function(x) {
   for(var i=0; i<nbhd.length; ++i) {
     var c = nbhd[i];
     var t = cellDistance(this.cells[c], positions, x);
-    if(Math.abs(t.value - d) < EPSILON) {
-      t.cell = i;
+    t.cell = c;
+    if(Math.abs(t.value[0] - d) < EPSILON) {
       r.push(t);
-    } else if(t.value < d) {
+    } else if(t.value[0] < d) {
       d = t.value;
-      t.cell = i;
       r = [ t ];
     }
   }
-  var point = numeric.rep([x.length], 0.0);
-  var cell = this.cells[r.cell];
-  var solution = r.solution;
-  for(var i=0; i<cell.length; ++i) {
-    var p = positions[cell[i]];
-    var w = solution[i];
-    for(var j=0; j<x.length; ++j) {
-      point[j] += p[j] * w;
+  var cells = [];
+  var points = [];
+  for(var k=0; k<r.length; ++k) {
+    var point = numeric.rep([x.length], 0.0);
+    var cell = this.cells[r[k].cell];
+    var solution = r[k].solution;
+    for(var i=0; i<cell.length; ++i) {
+      var p = positions[cell[i]];
+      var w = solution[i];
+      for(var j=0; j<x.length; ++j) {
+        point[j] += p[j] * w;
+      }
     }
+    cells.push(r[k].cell);
+    points.push(point);
   }
-  r.point = point;
-  return r;
+  return {
+    points: points,
+    cells: cells,
+    distance: numeric.norm2(numeric.sub(x, points[0]))
+  };
 }
 
 function fill0(grid, lo, hi, c) {

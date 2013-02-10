@@ -36,11 +36,9 @@ Returns information about the closest cell to the point `x` within the specified
 
 Returns: If no cell is within `tolerance`, returns `null`.  Otherwise, returns an object with the following parameters:
 
-* `cell`: The index of the cell within the complex
-* `point`: The closest point to `x`
-* `solution`: The barycentric coordinates of the closest point to `x`
-* `value`: The distance to the surface from `x`
-* ... a bunch of random crap from the quadratic programming solver that you should ignore.
+* `cells`: An array of cells of approximately equal distance to `x`
+* `points`: An array of points closest to x
+* `distance`: The distance to the surface from `x`
 
 `grid.signedDistance(x)`
 ------------------------
