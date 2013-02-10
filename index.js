@@ -98,6 +98,24 @@ BoundaryPoint.prototype.closestCells = function(grid, x) {
   };
 }
 
+BoundaryPoint.prototype.neighborhood = function(grid, x, radius) {
+  var nbhd = this.cells;
+  var r = [];
+  var r2 = radius*radius - numeric.dot(x,x);
+  for(var i=0; i<nbhd.length; ++i) {
+    var c = nbhd[i];
+    var t = cellDistance(grid.cells[c], grid.positions, x);
+    if(t.message.length > 0 || isNaN(t.value[0])) {
+      continue;
+    }
+    if(t.value[0] <= r2) {
+      r.push(c);
+    }
+  }
+  return r;
+}
+
+
 //Locates the closest cell within tolerance to x
 Grid.prototype.closestCells = function(x) {
   var tolerance = this.tolerance;
@@ -111,6 +129,23 @@ Grid.prototype.closestCells = function(x) {
   }
   return nbhd.closestCells(this, x);
 }
+
+
+//Locates the closest cell within tolerance to x
+Grid.prototype.neighborhood = function(x, radius) {
+  var tolerance = this.tolerance;
+  var ix = new Array(x.length);
+  for(var i=0; i<x.length; ++i) {
+    ix[i] = Math.floor(x[i] / tolerance);
+  }
+  var nbhd = this.grid[index(ix)];
+  if(!nbhd) {
+    return [];
+  }
+  return nbhd.neighborhood(this, x, radius);
+}
+
+
 
 //Optimized stuff to fill in grid
 function fill1(grid, lo, hi, c) {
