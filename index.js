@@ -1,3 +1,5 @@
+"use strict";
+
 var numeric = require("numeric");
 var bits = require("bit-twiddle");
 
@@ -37,41 +39,56 @@ function cellDistance(c, positions, x) {
       D[i][j] = D[j][i] = numeric.dot(pi, pj);
     }
   }
-  var A = numeric.rep([c.length, c.length+1], 0.0);
-  var b = numeric.rep([c.length+1], 0.0);
+  var A = numeric.rep([c.length, c.length+2], 0.0);
+  var b = numeric.rep([c.length+2], 0.0);
   b[0] = 1.0;
+  b[1] = -1.0;
   for(var i=0; i<c.length; ++i) {
     A[i][0]   = 1;
-    A[i][i+1] = 1;
+    A[i][1]   = -1
+    A[i][i+2] = 1;
   }
-  return numeric.solveQP(D, dvec, A, b, 1).value;
+  return numeric.solveQP(D, dvec, A, b);
 }
-module.exports.cellDistance = cellDistance;
 
 //Locates the closest cell within tolerance to x
 Grid.prototype.closestCell = function(x) {
   var tolerance = this.tolerance;
+  var positions = this.positions;
   var ix = new Array(x.length);
   for(var i=0; i<x.length; ++i) {
     ix[i] = (x[0] / tolerance) | 0;
   }
-  var nbhd = this.cells[index(ix)];
+  var nbhd = this.grid[index(ix)];
   if(!nbhd) {
-    return -1;
+    return null;
   }
   var d = Number.POSITIVE_INFINITY;
-  var r = -1;
+  var r = null;
   for(var i=0; i<nbhd.length; ++i) {
     var c = nbhd[i];
-    var nd = cellDistance(c, positions, x);
-    if(nd < d) {
-      d = nd;
-      r = c;
+    var t = cellDistance(this.cells[c], positions, x);
+    if(t.value < d) {
+      d = t.value;
+      t.cell = i;
+      r = t;
     }
   }
+  var point = numeric.rep([x.length], 0.0);
+  var cell = this.cells[r.cell];
+  var solution = r.solution;
+  console.log(cell, solution);
+  for(var i=0; i<cell.length; ++i) {
+    var p = positions[cell[i]];
+    var w = solution[i];
+    console.log(p, w, point);
+    for(var j=0; j<x.length; ++j) {
+      point[j] += p[j] * w;
+    }
+  }
+  r.point = point;
   return r;
 }
-
 
 function fill0(grid, lo, hi, c) {
   if(grid[0]) {
@@ -99,7 +116,6 @@ function expand2(x) {
   x = (x | (x << 1)) & 0x55555555;
   return x;
 }
-
 
 function fill2(grid, lo, hi, c) {
   for(var i=lo[1]; i<=hi[1]; ++i) {
@@ -148,7 +164,7 @@ function filln(grid, lo, hi, c) {
 }
 
 function createGrid(cells, positions, tolerance) {
-  var grid = [];
+  var grid = {};
   var d = positions[0].length;
   var lo = new Array(d);
   var ilo = new Array(d);
@@ -157,19 +173,19 @@ function createGrid(cells, positions, tolerance) {
   for(var i=0; i<cells.length; ++i) {
     var c = cells[i];
     for(var j=0; j<d; ++j) {
-      lo[d] = Number.POSITIVE_INFINITY;
-      hi[d] = Number.NEGATIVE_INFINITY;
+      lo[j] = Number.POSITIVE_INFINITY;
+      hi[j] = Number.NEGATIVE_INFINITY;
     }
     for(var k=0; k<c.length; ++k) {
       var p = positions[c[k]];
       for(var j=0; j<d; ++j) {
-        lo[d] = Math.min(lo[d], p[d]);
-        hi[d] = Math.max(hi[d], p[d]);
+        lo[j] = Math.min(lo[j], p[j]);
+        hi[j] = Math.max(hi[j], p[j]);
       }
     }
     for(var j=0; j<d; ++j) {
-      ilo[j] = (lo[j]/tolerance) | 0;
-      ihi[j] = (hi[j]/tolerance) | 0;
+      ilo[j] = Math.floor(lo[j] / tolerance) - 1;
+      ihi[j] = Math.floor(hi[j] / tolerance) + 1;
     }
     switch(d) {
       case 0:
@@ -191,3 +207,4 @@ function createGrid(cells, positions, tolerance) {
   }
   return new Grid(cells, positions, tolerance, grid);
 }
+module.exports.createGrid = createGrid;
