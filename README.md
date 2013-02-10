@@ -12,8 +12,8 @@ First, install via npm:
 Then you can create grids and query them as follows:
 
     var mesh = require("bunny");
-    var grid = require("sptial-grid")
-
+    var grid = require("sptial-grid")(mesh, 0.1);
+    var cells = grid.closestCells([1.0, 0.0, 0.0]);
 
 
 `require("spatial-grid")(mesh, tolerance)`
@@ -39,10 +39,6 @@ Returns: If no cell is within `tolerance`, returns `null`.  Otherwise, returns a
 * `cells`: An array of cells of approximately equal distance to `x`
 * `points`: An array of points closest to x
 * `distance`: The distance to the surface from `x`
-
-`grid.signedDistance(x)`
-------------------------
-If mesh is orientable, returns the signed distance to the point `x` assuming `x` is within a specified distance to the boundary.  Otherwise returns NaN.
 
 
 
