@@ -1,0 +1,35 @@
+{
+  "name": "spatial-grid",
+  "version": "0.0.0",
+  "description": "Computes closest points to meshes and polygons",
+  "main": "index.js",
+  "directories": {
+    "test": "test"
+  },
+  "dependencies": {
+    "bit-twiddle": "~0.0.1",
+    "conway-hart": "~0.0.0",
+    "numeric": "~1.2.6",
+    "bunny": "~0.0.0"
+  },
+  "devDependencies": {},
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git://github.com/mikolalysenko/spatial-grid.git"
+  },
+  "keywords": [
+    "3d",
+    "mesh",
+    "point",
+    "distance",
+    "simplex",
+    "geometry"
+  ],
+  "author": "Mikola Lysenko",
+  "license": "BSD",
+  "readmeFilename": "README.md",
+  "gitHead": "04c1a66fd40bc2f1e4a91ed8039a631cc654012f"
+}

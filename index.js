@@ -9,7 +9,6 @@ function Grid(cells, positions, tolerance, grid) {
   this.tolerance = tolerance;
   this.grid = grid;
 }
-module.exports = Grid;
 
 function index(x) {
   switch(x.length) {
@@ -25,7 +24,6 @@ function index(x) {
       return -1;
   };
 }
-module.exports.index = index;
 
 //Computes distance from x to cell c
 function cellDistance(c, positions, x) {
@@ -64,24 +62,25 @@ Grid.prototype.closestCell = function(x) {
     return null;
   }
   var d = Number.POSITIVE_INFINITY;
-  var r = null;
+  var r = [];
   for(var i=0; i<nbhd.length; ++i) {
     var c = nbhd[i];
     var t = cellDistance(this.cells[c], positions, x);
-    if(t.value < d) {
+    if(Math.abs(t.value - d) < EPSILON) {
+      t.cell = i;
+      r.push(t);
+    } else if(t.value < d) {
       d = t.value;
       t.cell = i;
-      r = t;
+      r = [ t ];
     }
   }
   var point = numeric.rep([x.length], 0.0);
   var cell = this.cells[r.cell];
   var solution = r.solution;
-  console.log(cell, solution);
   for(var i=0; i<cell.length; ++i) {
     var p = positions[cell[i]];
     var w = solution[i];
-    console.log(p, w, point);
     for(var j=0; j<x.length; ++j) {
       point[j] += p[j] * w;
     }
@@ -163,7 +162,9 @@ function filln(grid, lo, hi, c) {
   throw Error("Not implemented!");
 }
 
-function createGrid(cells, positions, tolerance) {
+function createGrid(mesh, tolerance) {
+  var cells = mesh.cells || mesh.faces;
+  var positions = mesh.positions;
   var grid = {};
   var d = positions[0].length;
   var lo = new Array(d);
@@ -207,4 +208,4 @@ function createGrid(cells, positions, tolerance) {
   }
   return new Grid(cells, positions, tolerance, grid);
 }
-module.exports.createGrid = createGrid;
+module.exports = createGrid;
