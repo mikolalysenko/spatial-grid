@@ -57,7 +57,7 @@ function cellDistance(c, positions, x) {
 }
 
 //Locates the closest cell within tolerance to x
-Grid.prototype.closestCell = function(x) {
+Grid.prototype.closestCells = function(x) {
   var tolerance = this.tolerance;
   var positions = this.positions;
   var ix = new Array(x.length);
