@@ -1,6 +1,6 @@
 {
   "name": "spatial-grid",
-  "version": "0.0.5",
+  "version": "0.1.0",
   "description": "Computes closest points to meshes and polygons",
   "main": "index.js",
   "directories": {
@@ -12,7 +12,7 @@
   },
   "devDependencies": {
     "conway-hart": "~0.0.0",
-    "bunny": "~0.0.0"
+    "bunny": "~1.0.0"
   },
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"

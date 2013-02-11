@@ -274,9 +274,7 @@ function fill(grid, lo, hi, c) {
   }
 }
 
-function createGrid(mesh, tolerance) {
-  var cells = mesh.cells || mesh.faces;
-  var positions = mesh.positions;
+function createGrid(cells, positions, tolerance) {
   var grid = {};  
   var result = new Grid(cells, positions, tolerance, grid);
   var d = positions[0].length;

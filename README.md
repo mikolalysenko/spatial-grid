@@ -10,8 +10,8 @@ First, install via npm:
     
 Then you can create grids and query them as follows:
 
-    var mesh = require("bunny");
-    var grid = require("spatial-grid")(mesh, 0.1);
+    var bunny = require("bunny");
+    var grid = require("spatial-grid")(bunny.cells, bunny.positions, 0.1);
     console.log(grid.closestCells([1.0, 0.0, 0.0]));
     
 Which returns the following data:
@@ -22,13 +22,12 @@ Which returns the following data:
 
 The code should work for two dimensional meshes, tetrahedral volume, and other higher dimensional structures.
 
-`require("spatial-grid")(mesh, tolerance)`
+`require("spatial-grid")(cells, positions, tolerance)`
 -----------------------------------------
 Creates a spatial grid over the simplicial complex determined by `[positions, cells]` with cell size = `tolerance`.
 
-* `mesh` is an object containing the following fields
-    + `cells` (or optionally `faces`): an array of cells, represented as indices
-    + `positions`: An array of position vectors
+* `cells` is an abstract simplicial complex represented by an array of arrays of indices
+* `positions` is an array of positions for the 0-cells
 * `tolerance`: The resolution of the cell complex
 
 Returns a spatial grid for the cell complex.
