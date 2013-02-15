@@ -42,7 +42,7 @@ Returns: If no cell is within `tolerance`, returns `null`.  Otherwise, returns a
 
 * `cells`: An array of cells of approximately equal distance to `x` (within a tolerance of +/-1e-6 )
 * `points`: An array of points closest to x
-* `distance`: The distance to the surface from `x`
+* `distance`: The squared distance to the surface from `x`
 
 `grid.neighborhood(x, radius)`
 ------------------------------
